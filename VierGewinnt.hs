@@ -68,7 +68,7 @@ gameloop = do
   let name = getName player
   -- IO: Spielzug
   liftIO $ printBoard b
-  liftIO $ putStr $  name ++ ", Einwurf in Spalte: "
+  liftIO $ putStrLn $  name ++ ", Einwurf in Spalte: "
   input <- liftIO getLine
   -- Spielzug auswerten
   let col = (read input :: Int)
