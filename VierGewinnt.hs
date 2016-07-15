@@ -1,5 +1,4 @@
 import Control.Monad.State
-import Control.Exception
 import Data.Array
 import Data.Maybe
 import qualified Text.Read as Read
