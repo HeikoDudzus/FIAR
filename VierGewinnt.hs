@@ -1,5 +1,8 @@
 import Control.Monad.State
+import Control.Exception
 import Data.Array
+import Data.Maybe
+import qualified Text.Read as Read
 import Board
 import Player
 import Contrahents
@@ -71,19 +74,24 @@ gameloop = do
   liftIO $ putStrLn $  name ++ ", Einwurf in Spalte: "
   input <- liftIO getLine
   -- Spielzug auswerten
-  let col = (read input :: Int)
-  let (success, pos, ub) = putInSlot symbol col b
-  let number = count pos ub
-  -- Spielstatus speichern
-  put $ if success
-        then (StateOfGame (next con) ub) -- neuer Spielstatus
-        else s                           -- Spielstaus unveraendert
-  if number >= 4
-    then do
+  let col = readMaybeInt input
+  if not (isJust col) 
+    then gameloop -- invalid input
+    else do   -- valid input
+    let (success, pos, ub) = putInSlot symbol (fromJust col) b
+    let number = count pos ub
+    -- Spielstatus speichern
+    put $ if success
+          then (StateOfGame (next con) ub) -- neuer Spielstatus
+          else s                           -- Spielstaus unveraendert
+    if number >= 4
+      then do
       liftIO $ printBoard ub
       liftIO $ putStrLn $ "Der Gewinner ist: " ++ name
-    else do
-      gameloop
+      else gameloop
+
+readMaybeInt :: String -> Maybe Int
+readMaybeInt = Read.readMaybe
 
 main = do
   let b = generateBoard dim
